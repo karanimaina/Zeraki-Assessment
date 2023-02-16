@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Course  {
+public class Course extends BaseEntity {
     private String name;
     private String description;
     private int monthDuration;
