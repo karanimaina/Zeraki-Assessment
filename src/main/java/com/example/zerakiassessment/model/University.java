@@ -5,9 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "tb_institution")
 @Getter
 @Setter
 public class University {
