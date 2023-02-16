@@ -15,10 +15,9 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private  String firstName;
-    private String lastName;
+    private  String name;
     @OneToOne
     private Course course;
-    @OneToOne
+    @ManyToOne
     private University university;
 }

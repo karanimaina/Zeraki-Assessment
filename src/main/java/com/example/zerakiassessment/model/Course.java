@@ -14,12 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 public class Course  {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+
     private String name;
-    @OneToMany
-    private List<University> University;
-    @OneToMany()
-    private List<Student>student;
+    private String description;
+    private int monthDuration;
+
 }
