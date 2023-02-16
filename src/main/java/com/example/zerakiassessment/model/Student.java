@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Table(name = "tb_student")
 @Getter
 @Setter
 @AllArgsConstructor
