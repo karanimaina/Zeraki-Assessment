@@ -1,6 +1,9 @@
 package com.example.zerakiassessment.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -14,11 +17,10 @@ import org.hibernate.annotations.Where;
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE tb_student SET soft_delete=true where id=?")
 @Where(clause = "soft_delete = false")
-public class Student  extends BaseEntity{    @Id
-private String name;
+public class Student  extends BaseEntity{
+    private String name;
     @Column(unique = true)
     private String admissionNo;
     @ManyToOne
     private Institution institution;
 }
-
