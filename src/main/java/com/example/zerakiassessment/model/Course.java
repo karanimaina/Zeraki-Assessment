@@ -1,16 +1,17 @@
 package com.example.zerakiassessment.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Table(name = "tb_courses")
 @Getter
 @Setter
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Course  {
     private String name;
     private String description;
