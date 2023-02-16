@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 @Setter
 public class Course  {
-
     private String name;
     private String description;
     private int monthDuration;
