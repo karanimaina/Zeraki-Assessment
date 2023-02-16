@@ -17,8 +17,4 @@ public class University {
     private String name;
     @OneToMany
     private List<Course> courses;
-    @OneToMany
-    private List<Student> student;
-
-
 }
