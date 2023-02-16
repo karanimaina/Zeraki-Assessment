@@ -14,8 +14,7 @@ import org.hibernate.annotations.Where;
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE tb_student SET soft_delete=true where id=?")
 @Where(clause = "soft_delete = false")
-public class Student {
-    @Id
+public class Student  extends BaseEntity{    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private  String name;
