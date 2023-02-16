@@ -144,7 +144,7 @@ public class StudentServiceImpl implements StudentService {
     public Mono<UniversalResponse> findStudentsInInstitution(StudentWrapper studentWrapper) {
         return Mono.fromCallable(()-> {
             Pageable pageable= PageRequest.of(studentWrapper.pageId(),10);
-            Page<Student> student= studentRepository.findAllByInstitutionId(pageable);
+            Page<Student> student= studentRepository.findAllByInstitutionId(studentWrapper.institutionId(),pageable);
             return UniversalResponse.builder().status(200)
                     .message("Student list").data(student).build();
         }).publishOn(Schedulers.boundedElastic());
