@@ -21,5 +21,5 @@ public class Course  {
     @OneToMany
     private List<University> University;
     @OneToMany()
-    private List<Student> student;
+    private List<Student>student;
 }
