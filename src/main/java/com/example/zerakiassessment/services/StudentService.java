@@ -1,4 +1,14 @@
 package com.example.zerakiassessment.services;
 
-public class StudentService {
+import com.example.zerakiassessment.model.Student;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
+@Service
+public class StudentService  {
+    private final StudentService studentService;
+
+    public Student addStudent(S)
+
 }

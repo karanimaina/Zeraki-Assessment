@@ -17,6 +17,8 @@ public class Student {
     private long id;
     private  String firstName;
     private String lastName;
+    @OneToOne
     private Course course;
+    @OneToOne
     private University university;
 }
