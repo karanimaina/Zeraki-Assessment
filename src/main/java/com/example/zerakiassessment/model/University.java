@@ -1,10 +1,9 @@
 package com.example.zerakiassessment.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -16,7 +15,8 @@ public class University {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
-    private Course courses;
+    @OneToMany
+    private List<Course> courses;
     private Student student;
 
 
