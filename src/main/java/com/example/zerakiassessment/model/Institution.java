@@ -16,8 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE tb_institution SET soft_delete=true where id=?")
 @Where(clause = "soft_delete = false")
-
-public class University {
+public class Institution extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
