@@ -8,7 +8,8 @@ import lombok.*;
 @Setter
 @Entity
 @Builder
-
+@NoArgsConstructor
+@AllArgsConstructor
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
