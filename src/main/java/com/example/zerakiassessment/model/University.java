@@ -1,10 +1,10 @@
 package com.example.zerakiassessment.model;
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
@@ -12,5 +12,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class University {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    private String name;
+    private Course courses;
+    private Student student;
+
 
 }
