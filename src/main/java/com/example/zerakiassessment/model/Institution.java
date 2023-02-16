@@ -17,10 +17,10 @@ import java.util.List;
 @SQLDelete(sql="UPDATE tb_institution SET soft_delete=true where id=?")
 @Where(clause = "soft_delete = false")
 public class Institution extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+
+    @Column(unique = true)
     private String name;
-    @OneToMany
-    private List<Course> courses;
+    private String telephone;
+    private String location;
+
 }
