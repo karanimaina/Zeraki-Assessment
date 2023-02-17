@@ -1,6 +1,7 @@
 package com.example.zerakiassessment.service.impl;
 
 
+import com.example.zerakiassessment.exceptions.InstitutionException;
 import com.example.zerakiassessment.exceptions.StudentException;
 import com.example.zerakiassessment.model.Course;
 import com.example.zerakiassessment.model.Institution;
@@ -43,7 +44,9 @@ public class StudentServiceImpl implements StudentService {
                             .orElseThrow(()-> new StudentException("Institution not found"));
 
             studentRepository.findTopByAdmissionNoEqualsIgnoreCase(studentWrapper.admissionNo())
-                    .orElseThrow(() -> new StudentException("Student by admission already exists"));
+                    .ifPresent(student -> {
+                        throw new StudentException("Student by admission already exists");
+                    });
 
             institutionCourseRepository.findByCourseAndInstitution(course.getId(),institution.getId())
                     .orElseThrow(()-> new StudentException("Course not found in institution"));
@@ -55,10 +58,11 @@ public class StudentServiceImpl implements StudentService {
                     .institution(institution)
                     .build();
 
-            student = studentRepository.save(student);
+            Student newstudent = studentRepository.save(student);
             StudentCourse studentCourse= StudentCourse.builder().courseId(course.getId())
-                    .studentId(student.getId()).build();
-            return UniversalResponse.builder().status(200).message("Student saved successfully").data(studentCourse)
+                    .studentId(newstudent.getId()).build();
+            studentCourseRepository.save(studentCourse);
+            return UniversalResponse.builder().status(200).message("Student saved successfully").data(newstudent)
                     .build();
         }).publishOn(Schedulers.boundedElastic());
     }
@@ -83,11 +87,11 @@ public class StudentServiceImpl implements StudentService {
 
 
     @Override
-    public Mono<UniversalResponse> editStudent(StudentNameEdit studentNameEdit) {
+    public Mono<UniversalResponse> editStudent(StudentWrapper studentWrapper) {
         return Mono.fromCallable(() -> {
-            Student student = studentRepository.findByAdmissionNo(studentNameEdit.admNo() )
+            Student student = studentRepository.findById(studentWrapper.studentId() )
                     .orElseThrow(() -> new StudentException("Student not found"));
-            student.setName(studentNameEdit.name());
+            student.setName(studentWrapper.name());
             student = studentRepository.save(student);
             return UniversalResponse.builder().status(200).message("Student updated successfully")
                     .data(student).build();
@@ -155,7 +159,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Mono<UniversalResponse> listStudents(StudentWrapper studentWrapper) {
         return Mono.fromCallable(()-> {
-            List<Student> students= studentRepository.findAll();
+            Pageable pageable= PageRequest.of(studentWrapper.pageId(),10);
+            institutionRepository.findById(studentWrapper.institutionId())
+                    .orElseThrow(()-> new InstitutionException("Institution not found"));
+            Page<Student> students= studentRepository.findAllByInstitutionId(studentWrapper.institutionId(), pageable);
             return UniversalResponse.builder().status(200).message("Student list").data(students)
                     .build();
         }).publishOn(Schedulers.boundedElastic());

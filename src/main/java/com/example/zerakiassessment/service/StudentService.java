@@ -9,7 +9,7 @@ public interface StudentService {
     Mono<UniversalResponse> addStudent(StudentWrapper2 studentWrapper);
     Mono<UniversalResponse> deleteStudent(long id);
 
-    Mono<UniversalResponse> editStudent(StudentNameEdit studentWrapper);
+    Mono<UniversalResponse> editStudent(StudentWrapper studentWrapper);
 
     Mono<UniversalResponse> changeStudentCourse(StudentCourseWrapper studentWrapper);
 

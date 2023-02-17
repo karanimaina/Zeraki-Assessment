@@ -14,7 +14,7 @@ import reactor.core.scheduler.Schedulers;
 @RestController
 @RequiredArgsConstructor
 public class InstitutionController {
-    public InstitutionService institutionService;
+    public final InstitutionService institutionService;
 
     @PostMapping("/create")
     public Mono<ResponseEntity<UniversalResponse>> createInstitution(@RequestBody InstitutionWrapper institutionWrapper){
@@ -24,7 +24,7 @@ public class InstitutionController {
     }
 
     @GetMapping("/all")
-    public Mono<ResponseEntity<UniversalResponse>> getAllInstitution(@RequestParam boolean desc){
+    public Mono<ResponseEntity<UniversalResponse>> getAllInstitution(@RequestParam(required = false) boolean desc){
         return institutionService.getAllInstitution(desc)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
@@ -38,8 +38,8 @@ public class InstitutionController {
     }
 
     @DeleteMapping("/delete")
-    public Mono<ResponseEntity<UniversalResponse>> deleteInstitution(@RequestBody long institutionWrapper){
-        return institutionService.deleteInstitution(institutionWrapper)
+    public Mono<ResponseEntity<UniversalResponse>> deleteInstitution(@RequestBody InstitutionWrapper institutionWrapper){
+        return institutionService.deleteInstitution(institutionWrapper.institutionId())
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }

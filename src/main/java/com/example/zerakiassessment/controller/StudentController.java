@@ -23,14 +23,14 @@ public class StudentController {
                 .publishOn(Schedulers.boundedElastic());
     }
     @DeleteMapping("/delete")
-    public Mono<ResponseEntity<UniversalResponse>> deleteStudent(@RequestBody long id){
-        return studentService.deleteStudent(id)
+    public Mono<ResponseEntity<UniversalResponse>> deleteStudent(@RequestBody StudentWrapper studentWrapper){
+        return studentService.deleteStudent(studentWrapper.studentId())
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }
 
     @PutMapping("/edit")
-    public Mono<ResponseEntity<UniversalResponse>> editStudent(@RequestBody StudentNameEdit studentWrapper){
+    public Mono<ResponseEntity<UniversalResponse>> editStudent(@RequestBody StudentWrapper studentWrapper){
         return studentService.editStudent(studentWrapper)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
@@ -50,14 +50,14 @@ public class StudentController {
                 .publishOn(Schedulers.boundedElastic());
     }
 
-    @GetMapping("/student/institutions")
-    public Mono<ResponseEntity<UniversalResponse>> listStudentsInstitution(@RequestBody StudentWrapper student){
-        return studentService.listStudents(student)
+    @GetMapping("/all")
+    public Mono<ResponseEntity<UniversalResponse>> listStudentsInstitution(@RequestBody StudentWrapper studentWrapper){
+        return studentService.listStudents(studentWrapper)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }
 
-    @PostMapping("/institution")
+    @PostMapping("/search")
     public Mono<ResponseEntity<UniversalResponse>>  findStudentsInInstitution(@RequestBody StudentPager studentWrapper){
         return studentService.findStudentsInInstitution(studentWrapper)
                 .map(ResponseEntity::ok)

@@ -10,7 +10,6 @@ import com.example.zerakiassessment.repository.InstitutionCourseRepository;
 import com.example.zerakiassessment.repository.InstitutionRepository;
 import com.example.zerakiassessment.repository.StudentCourseRepository;
 import com.example.zerakiassessment.service.CourseService;
-import com.example.zerakiassessment.wrapper.CourseInstitutionWrapper;
 import com.example.zerakiassessment.wrapper.CourseWrapper;
 import com.example.zerakiassessment.wrapper.CourseWrapper2;
 import com.example.zerakiassessment.wrapper.UniversalResponse;
@@ -31,20 +30,14 @@ public class CourseServiceImp implements CourseService {
     private final InstitutionRepository institutionRepository;
 
     /**
-     *
-     * @param courseWrapper Course Wrapper
-     * @return Universal response or throw an error if operation fails
+     * @param institutionId@return Universal response or throw an error if operation fails
      */
     @Override
-    public Mono<UniversalResponse> getCoursesByInstitution(CourseInstitutionWrapper courseWrapper) {
+    public Mono<UniversalResponse> getCoursesByInstitution(long institutionId) {
         return Mono.fromCallable(() -> {
-            Course course = courseRepository.findById(courseWrapper.courseId())
-                    .orElse(null);
-            if (course == null) {
-                throw new CourseException("Course by Id does not exists");
-            }
-            long institution = courseWrapper.institutionId();
-            List<Course> courseList = institutionCourseRepository.findAllByInstitution(institution)
+            institutionRepository.findById(institutionId)
+                    .orElseThrow(()-> new CourseException("Institution not found"));
+            List<Course> courseList = institutionCourseRepository.findAllByInstitution(institutionId)
                     .stream()
                     .map(ic->courseRepository.findById(ic.getCourse()))
                     .filter(Optional::isPresent)
@@ -96,12 +89,12 @@ public class CourseServiceImp implements CourseService {
     }
 
     @Override
-    public Mono<UniversalResponse> addCourseToInstitution(CourseWrapper2 courseWrapper) {
+    public Mono<UniversalResponse> addCourseToInstitution(CourseWrapper courseWrapper) {
         //check if institution has course assigned
         return Mono.fromCallable(() -> {
             //check oif Course exists
 //            check if corse exists by name
-           Course course = courseRepository.findByName(courseWrapper.coursename())
+           Course course = courseRepository.findById(courseWrapper.courseId())
                     .orElseThrow(() -> new CourseException("Course not found"));
            Institution institution = institutionRepository.findById(courseWrapper.institutionId())
                     .orElseThrow(() -> new CourseException("Institution not found"));

@@ -9,7 +9,8 @@ public record InstitutionWrapper (
         @NotBlank (message = "Tel cannot be empty")
         String tel,
         @NotBlank (message = "Location cannot be empty")
-        String location
+        String location,
+        long institutionId
 
 ){
 }

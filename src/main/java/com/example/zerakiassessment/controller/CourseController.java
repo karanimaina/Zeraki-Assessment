@@ -2,10 +2,10 @@ package com.example.zerakiassessment.controller;
 
 
 import com.example.zerakiassessment.service.CourseService;
-import com.example.zerakiassessment.wrapper.CourseInstitutionWrapper;
 import com.example.zerakiassessment.wrapper.CourseWrapper;
 import com.example.zerakiassessment.wrapper.CourseWrapper2;
 import com.example.zerakiassessment.wrapper.UniversalResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,22 +17,22 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 public class CourseController {
     private final CourseService courseService;
-    @PostMapping("/institution/all")
-    public Mono<ResponseEntity<UniversalResponse>> getCoursesByInstitution(@RequestBody CourseInstitutionWrapper courseWrapper){
-        return courseService.getCoursesByInstitution(courseWrapper)
+    @GetMapping("/institution/all")
+    public Mono<ResponseEntity<UniversalResponse>> getCoursesByInstitution(@RequestParam long institutionId ){
+        return courseService.getCoursesByInstitution(institutionId)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }
-    @PostMapping("/add/course")
-    public Mono<ResponseEntity<UniversalResponse>>addCourseToInstitution(@RequestBody CourseWrapper2 courseWrapper){
+    @PostMapping("/add/institution")
+    public Mono<ResponseEntity<UniversalResponse>>addCourseToInstitution( @RequestBody CourseWrapper courseWrapper){
         return courseService.addCourseToInstitution(courseWrapper)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }
 
     @GetMapping("/filter/name")
-    public Mono<ResponseEntity<UniversalResponse>> filterCourseByName(@RequestBody  String  courseWrapper){
-        return courseService.filterCourseByName(courseWrapper)
+    public Mono<ResponseEntity<UniversalResponse>> filterCourseByName(@RequestParam  String  name){
+        return courseService.filterCourseByName(name)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }
