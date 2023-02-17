@@ -2,7 +2,9 @@ package com.example.zerakiassessment.controller;
 
 
 import com.example.zerakiassessment.service.CourseService;
+import com.example.zerakiassessment.wrapper.CourseInstitutionWrapper;
 import com.example.zerakiassessment.wrapper.CourseWrapper;
+import com.example.zerakiassessment.wrapper.CourseWrapper2;
 import com.example.zerakiassessment.wrapper.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +18,20 @@ import reactor.core.scheduler.Schedulers;
 public class CourseController {
     private final CourseService courseService;
     @PostMapping("/institution/all")
-    public Mono<ResponseEntity<UniversalResponse>> getCoursesByInstituion(@RequestBody CourseWrapper courseWrapper){
+    public Mono<ResponseEntity<UniversalResponse>> getCoursesByInstitution(@RequestBody CourseInstitutionWrapper courseWrapper){
         return courseService.getCoursesByInstitution(courseWrapper)
+                .map(ResponseEntity::ok)
+                .publishOn(Schedulers.boundedElastic());
+    }
+    @PostMapping("/add/course")
+    public Mono<ResponseEntity<UniversalResponse>>addCourseToInstitution(@RequestBody CourseWrapper2 courseWrapper){
+        return courseService.addCourseToInstitution(courseWrapper)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }
 
     @GetMapping("/filter/name")
-    public Mono<ResponseEntity<UniversalResponse>> filterCourseByName(@RequestBody  CourseWrapper courseWrapper){
+    public Mono<ResponseEntity<UniversalResponse>> filterCourseByName(@RequestBody  String  courseWrapper){
         return courseService.filterCourseByName(courseWrapper)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());

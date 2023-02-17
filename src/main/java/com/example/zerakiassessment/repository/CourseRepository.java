@@ -13,6 +13,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findAllByOrderByNameAsc();
 
     List<Course> findAllByOrderByNameDesc();
+    Optional<Course> findByName(String name);
 
     Optional<Course> findByNameEqualsIgnoreCaseAndIdNot(String name, long id);
 }

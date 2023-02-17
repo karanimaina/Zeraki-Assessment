@@ -8,8 +8,7 @@ import com.example.zerakiassessment.model.Student;
 import com.example.zerakiassessment.model.StudentCourse;
 import com.example.zerakiassessment.repository.*;
 import com.example.zerakiassessment.service.StudentService;
-import com.example.zerakiassessment.wrapper.StudentWrapper;
-import com.example.zerakiassessment.wrapper.UniversalResponse;
+import com.example.zerakiassessment.wrapper.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,9 +27,14 @@ public class StudentServiceImpl implements StudentService {
     private final StudentCourseRepository studentCourseRepository;
     private final InstitutionCourseRepository institutionCourseRepository;
     private final InstitutionRepository institutionRepository;
+/**
+ * add student
+ * set student to course
+ * set student to institution
+ */
 
     @Override
-    public Mono<UniversalResponse> addStudent(StudentWrapper studentWrapper) {
+    public Mono<UniversalResponse> addStudent(StudentWrapper2 studentWrapper) {
         return Mono.fromCallable(() -> {
             Course course= courseRepository.findById(studentWrapper.courseId())
                             .orElseThrow(()-> new StudentException("Course not found"));
@@ -58,36 +62,53 @@ public class StudentServiceImpl implements StudentService {
                     .build();
         }).publishOn(Schedulers.boundedElastic());
     }
+/**
+ * check if student exist
+ * delete student
+ */
 
     @Override
-    public Mono<UniversalResponse> deleteStudent(StudentWrapper studentWrapper) {
+    public Mono<UniversalResponse> deleteStudent(long id) {
         return Mono.fromCallable(() -> {
-            Student student = studentRepository.findById(studentWrapper.studentId())
+            Student student = studentRepository.findById(id)
                     .orElseThrow(() -> new StudentException("Student not found"));
             studentRepository.delete(student);
             return UniversalResponse.builder().status(200).message("Student deleted successfuly").build();
         }).publishOn(Schedulers.boundedElastic());
     }
+    /**
+     * find Student by admissionNo
+     * Change  the  name of the Student
+     */
+
 
     @Override
-    public Mono<UniversalResponse> editStudent(StudentWrapper studentWrapper) {
+    public Mono<UniversalResponse> editStudent(StudentNameEdit studentNameEdit) {
         return Mono.fromCallable(() -> {
-            Student student = studentRepository.findById(studentWrapper.studentId())
+            Student student = studentRepository.findByAdmissionNo(studentNameEdit.admNo() )
                     .orElseThrow(() -> new StudentException("Student not found"));
-            student.setName(student.getName());
+            student.setName(studentNameEdit.name());
             student = studentRepository.save(student);
             return UniversalResponse.builder().status(200).message("Student updated successfully")
                     .data(student).build();
         }).publishOn(Schedulers.boundedElastic());
     }
 
+/**
+ * find Student by id
+ * find course by id
+ * verify if the student has an assigned course
+ * verify if the institution has the selected course
+ * assign student the course
+ */
+
     @Override
-    public Mono<UniversalResponse> changeStudentCourse(StudentWrapper studentWrapper) {
+    public Mono<UniversalResponse> changeStudentCourse(StudentCourseWrapper studentCourseWrapper) {
         return Mono.fromCallable(() -> {
             //check if student is assigned a course
-            Student student= studentRepository.findById(studentWrapper.studentId())
+            Student student= studentRepository.findById(studentCourseWrapper.studentId())
                     .orElseThrow(()-> new StudentException("Student not found"));
-            Course course= courseRepository.findById(studentWrapper.courseId())
+            Course course= courseRepository.findById(studentCourseWrapper.courseId())
                     .orElseThrow(()->new StudentException("Course not found"));
 
             StudentCourse studentCourse= studentCourseRepository.findByCourseIdAndStudentId(course.getId(),student.getId())
@@ -141,9 +162,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Mono<UniversalResponse> findStudentsInInstitution(StudentWrapper studentWrapper) {
+    public Mono<UniversalResponse> findStudentsInInstitution(StudentPager studentWrapper) {
         return Mono.fromCallable(()-> {
-            Pageable pageable= PageRequest.of(studentWrapper.pageId(),10);
+            Pageable pageable= PageRequest.of(studentWrapper.page(),10);
             Page<Student> student= studentRepository.findAllByInstitutionId(studentWrapper.institutionId(),pageable);
             return UniversalResponse.builder().status(200)
                     .message("Student list").data(student).build();

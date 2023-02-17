@@ -1,6 +1,7 @@
 package com.example.zerakiassessment.controller;
 
 import com.example.zerakiassessment.service.InstitutionService;
+import com.example.zerakiassessment.wrapper.InstitutionNameWrapper;
 import com.example.zerakiassessment.wrapper.InstitutionWrapper;
 import com.example.zerakiassessment.wrapper.UniversalResponse;
 import lombok.RequiredArgsConstructor;
@@ -37,14 +38,14 @@ public class InstitutionController {
     }
 
     @DeleteMapping("/delete")
-    public Mono<ResponseEntity<UniversalResponse>> deleteInstitution(@RequestBody InstitutionWrapper institutionWrapper){
+    public Mono<ResponseEntity<UniversalResponse>> deleteInstitution(@RequestBody long institutionWrapper){
         return institutionService.deleteInstitution(institutionWrapper)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());
     }
 
     @PutMapping("/update")
-    public Mono<ResponseEntity<UniversalResponse>> updateInstitutionName(@RequestBody InstitutionWrapper institutionWrapper){
+    public Mono<ResponseEntity<UniversalResponse>> updateInstitutionName(@RequestBody InstitutionNameWrapper institutionWrapper){
         return institutionService.updateInstitutionName(institutionWrapper)
                 .map(ResponseEntity::ok)
                 .publishOn(Schedulers.boundedElastic());

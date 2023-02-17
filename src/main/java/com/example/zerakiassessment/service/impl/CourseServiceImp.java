@@ -3,13 +3,16 @@ package com.example.zerakiassessment.service.impl;
 
 import com.example.zerakiassessment.exceptions.CourseException;
 import com.example.zerakiassessment.model.Course;
+import com.example.zerakiassessment.model.Institution;
 import com.example.zerakiassessment.model.InstitutionCourse;
 import com.example.zerakiassessment.repository.CourseRepository;
 import com.example.zerakiassessment.repository.InstitutionCourseRepository;
 import com.example.zerakiassessment.repository.InstitutionRepository;
 import com.example.zerakiassessment.repository.StudentCourseRepository;
 import com.example.zerakiassessment.service.CourseService;
+import com.example.zerakiassessment.wrapper.CourseInstitutionWrapper;
 import com.example.zerakiassessment.wrapper.CourseWrapper;
+import com.example.zerakiassessment.wrapper.CourseWrapper2;
 import com.example.zerakiassessment.wrapper.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +36,7 @@ public class CourseServiceImp implements CourseService {
      * @return Universal response or throw an error if operation fails
      */
     @Override
-    public Mono<UniversalResponse> getCoursesByInstitution(CourseWrapper courseWrapper) {
+    public Mono<UniversalResponse> getCoursesByInstitution(CourseInstitutionWrapper courseWrapper) {
         return Mono.fromCallable(() -> {
             Course course = courseRepository.findById(courseWrapper.courseId())
                     .orElse(null);
@@ -53,10 +56,12 @@ public class CourseServiceImp implements CourseService {
     }
 
     @Override
-    public Mono<UniversalResponse> filterCourseByName(CourseWrapper courseWrapper) {
+    public Mono<UniversalResponse> filterCourseByName(String name) {
         return Mono.fromCallable(() -> {
             List<Course> courseList = courseRepository
-                    .findCourseByNameContainingIgnoreCase(courseWrapper.name());
+//                    .findCourseByNameContainingIgnoreCase(courseWrapper.name());
+                    .findCourseByNameContainingIgnoreCase(name);
+
             return UniversalResponse.builder().status(200).message("Course List search result")
                     .data(courseList).build();
         }).publishOn(Schedulers.boundedElastic());
@@ -91,21 +96,22 @@ public class CourseServiceImp implements CourseService {
     }
 
     @Override
-    public Mono<UniversalResponse> addCourseToInstitution(CourseWrapper courseWrapper) {
+    public Mono<UniversalResponse> addCourseToInstitution(CourseWrapper2 courseWrapper) {
         //check if institution has course assigned
         return Mono.fromCallable(() -> {
             //check oif Course exists
-            courseRepository.findById(courseWrapper.courseId())
+//            check if corse exists by name
+           Course course = courseRepository.findByName(courseWrapper.coursename())
                     .orElseThrow(() -> new CourseException("Course not found"));
-            institutionRepository.findById(courseWrapper.institutionId())
+           Institution institution = institutionRepository.findById(courseWrapper.institutionId())
                     .orElseThrow(() -> new CourseException("Institution not found"));
             institutionCourseRepository
-                    .findByCourseAndInstitution(courseWrapper.courseId(), courseWrapper.institutionId())
+                    .findByCourseAndInstitution(course.getId(), institution.getId())
                     .ifPresent(course1 -> {
                         throw new CourseException("Course is already assigned to institution");
                     });
             InstitutionCourse institutionCourse= InstitutionCourse.builder()
-                    .institution(courseWrapper.institutionId()).course(courseWrapper.courseId()).build();
+                    .institution(institution.getId()).course(course.getId()).build();
 
             InstitutionCourse saved=institutionCourseRepository.save(institutionCourse);
             return UniversalResponse.builder().status(200).message("Added course to Institution").data(saved)
