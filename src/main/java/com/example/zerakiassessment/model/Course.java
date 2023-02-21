@@ -1,6 +1,7 @@
 package com.example.zerakiassessment.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -19,4 +20,5 @@ public class Course extends BaseEntity{
     private String name;
     private String description;
     private int monthDuration;
+
 }

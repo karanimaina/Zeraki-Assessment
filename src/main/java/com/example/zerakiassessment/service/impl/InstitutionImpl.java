@@ -25,9 +25,11 @@ public class InstitutionImpl implements InstitutionService {
     /**
      *
      * @param institutionWrapper
-     * verify if institution  exist
-     * save a new institution
-     *
+     *  creates a new Institution object with the data provided in the InstitutionWrapper and saves it to the database.
+     *  checks if an institution with the same name already exists in the database by calling the findTopByNameEqualsIgnoreCase method of the institutionRepository. If it exists, the method throws an InstitutionException with an appropriate message.
+     *  If the institution does not exist, a new Institution object is created using the data provided in the InstitutionWrapper.
+     *  object is saved to the database using the institutionRepository's save method,
+     * @return  UniversalResponse object with a status of 200
      */
     @Override
     public Mono<UniversalResponse> createInstitution(InstitutionWrapper institutionWrapper) {
@@ -46,7 +48,9 @@ public class InstitutionImpl implements InstitutionService {
         }).publishOn(Schedulers.boundedElastic());
     }
     /**
-   * List all institutions in descending order
+   * This method retrieves a list of all institutions.
+     *  takes a boolean flag 'desc' that determines whether the institutions should be sorted in descending order or not.
+     *  retrieves the institutions from the repository and creates a UniversalResponse object with the retrieved institutions as data.
    */
 
     @Override
@@ -58,8 +62,10 @@ public class InstitutionImpl implements InstitutionService {
         }).publishOn(Schedulers.boundedElastic());
     }
 /**
- * Search an institution by Name
- * return a list of institution
+ * searches for institutions in the database that match a given name.
+ * method takes in a String parameter name,
+ * creates a List of Institution objects that match the given name by calling institutionRepository.findAllByNameContainingIgnoreCase(name).
+ * @return  UniversalResponse object with a status code of 200
  */
 
     @Override
@@ -70,6 +76,15 @@ public class InstitutionImpl implements InstitutionService {
         }).publishOn(Schedulers.boundedElastic());
     }
 
+    /**
+     * accepts a long parameter institutionId
+     * @param institutionId
+     * finds the institution with the specified institutionId using the institutionRepository.findById method. If the institution is not found, it throws an InstitutionException with a "Institution not found" message.
+     * checks if the institution has been assigned to any course by invoking the institutionCourseRepository.existsByInstitution method. If the institution has been assigned to any course, it returns a UniversalResponse object with a status code of 400 and a "Cannot delete, Institution has been assigned to course|s" message.
+     * If the institution has not been assigned to any course, it sets the softDelete attribute of the institution to true and saves the updated institution using the institutionRepository.save method.
+     * @return UniversalResponse object with a status code of 200
+     */
+
     @Override
     public Mono<UniversalResponse> deleteInstitution(long institutionId) {
         return Mono.fromCallable(()-> {
@@ -79,12 +94,21 @@ public class InstitutionImpl implements InstitutionService {
             if(existInstitutionCourse){
                 return UniversalResponse.builder().status(400).message("Cannot delete, Institution has been assigned to course|s").build();
             }
+
             institution.setSoftDelete(true);
             institutionRepository.save(institution);
             return UniversalResponse.builder().status(200).message("Institution deleted successfully").build();
         }).publishOn(Schedulers.boundedElastic());
     }
 
+    /**
+     *
+     * @param institutionWrapper
+     * check if institution exist by the id;
+     *  checks if the new name already exists for another institution in the database, by calling the existsByNameEqualsIgnoreCaseAndIdNot() method on the institutionRepository.
+     * updates the name of the Institution object with the new name passed in the InstitutionNameWrapper object.
+     * @return UniversalResponse object with a status code of 200 and a message indicating that the institution was updated successfully, along with the updated Institution object.
+     */
     @Override
     public Mono<UniversalResponse> updateInstitutionName(InstitutionNameWrapper institutionWrapper) {
         return Mono.fromCallable(()->{

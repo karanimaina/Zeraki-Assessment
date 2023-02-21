@@ -28,11 +28,19 @@ public class StudentServiceImpl implements StudentService {
     private final StudentCourseRepository studentCourseRepository;
     private final InstitutionCourseRepository institutionCourseRepository;
     private final InstitutionRepository institutionRepository;
-/**
- * add student
- * set student to course
- * set student to institution
- */
+
+    /**
+     *
+     * @param studentWrapper
+     * takes in a StudentWrapper2 object that contains the necessary information to create a new student.
+     * It then uses this information to first find the corresponding course and institution from their respective repositories.
+     * If the student already exists (by admission number), an exception is thrown.
+     * If the course is not found in the institution, another exception is thrown.
+     * @return
+     * If the student is new, a new Student object is created with the provided information along with the corresponding institution.
+     * The new student is then saved to the student repository, and a StudentCourse object is created with the new student ID and the course ID, indicating that the student is enrolled in that course.
+     * Finally, the StudentCourse object is saved to the student course repository.
+     */
 
     @Override
     public Mono<UniversalResponse> addStudent(StudentWrapper2 studentWrapper) {
@@ -67,8 +75,8 @@ public class StudentServiceImpl implements StudentService {
         }).publishOn(Schedulers.boundedElastic());
     }
 /**
- * check if student exist
- * delete student
+ *The method retrieves the Student object from the repository based on the given id parameter, or throws a StudentException if the Student object is not found.
+ *  It then deletes the Student object using the delete method of the studentRepository.
  */
 
     @Override
@@ -80,11 +88,13 @@ public class StudentServiceImpl implements StudentService {
             return UniversalResponse.builder().status(200).message("Student deleted successfuly").build();
         }).publishOn(Schedulers.boundedElastic());
     }
-    /**
-     * find Student by admissionNo
-     * Change  the  name of the Student
-     */
 
+    /**
+     *method that updates the name of a student with the given student ID.
+     * The method takes in a StudentWrapper object that contains the new name and the ID of the student to be updated.
+     * retrieves the student from the database using the provided student ID. If the student is not found, it throws a StudentException.
+     *  sets the new name for the student and saves it to the database using the studentRepository.save() method.
+     */
 
     @Override
     public Mono<UniversalResponse> editStudent(StudentWrapper studentWrapper) {
@@ -98,14 +108,18 @@ public class StudentServiceImpl implements StudentService {
         }).publishOn(Schedulers.boundedElastic());
     }
 
-/**
- * find Student by id
- * find course by id
- * verify if the student has an assigned course
- * verify if the institution has the selected course
- * assign student the course
- */
-
+    /**
+     *
+     * @param studentCourseWrapper
+     * The method takes in a StudentCourseWrapper object that contains the studentId and the new courseId that the student will be assigned to.
+     * uses the studentId to retrieve the corresponding Student object from the studentRepository. If the student does not exist, it throws a StudentException.
+     * uses the new courseId to retrieve the corresponding Course object from the courseRepository. If the course does not exist, it throws a StudentException.
+     * uses the courseId and studentId to retrieve the corresponding StudentCourse object from the studentCourseRepository. If the StudentCourse object does not exist, it means that no course was assigned to the student, so it throws a StudentException.
+     * retrieves the Institution object associated with the student's current course using the getInstitution() method of the Student object and passes it to the institutionCourseRepository along with the new courseId to check if the new course is available in the same institution. If the course is not available, it throws a StudentException.
+     * creates a new StudentCourse object with the new courseId and studentId and saves it using the studentCourseRepository.
+     * deletes the old StudentCourse object using the studentCourseRepository.
+     * @return  a UniversalResponse object
+     */
     @Override
     public Mono<UniversalResponse> changeStudentCourse(StudentCourseWrapper studentCourseWrapper) {
         return Mono.fromCallable(() -> {
@@ -131,7 +145,15 @@ public class StudentServiceImpl implements StudentService {
                     .build();
         }).publishOn(Schedulers.boundedElastic());
     }
-
+    /**
+     * method that transfers a student from their current institution and course to a new institution and course.
+     * @param studentWrapper
+     *  takes a StudentWrapper object which contains the id of the student to be transferred, the institutionId of the new institution and the courseId of the new course.
+     *  retrieves the Student entity from the database using the studentId from the StudentWrapper. It then retrieves the new Institution and Course entities using their respective IDs from the StudentWrapper. It checks if the new institution offers the new course by querying the institutionCourseRepository. If it doesn't, it throws a StudentException with an appropriate error message.
+     *  deletes the student's current course (if any) by querying the studentCourseRepository and passing the courseId. It sets the student's Institution to the new institution and saves the Student entity to the database
+     *  it creates a new StudentCourse entity with the student's id and the new courseId, and saves it to the database using studentCourseRepository.save().
+     * @return
+     */
     @Override
     public Mono<UniversalResponse> transferStudent(StudentWrapper studentWrapper) {
         return  Mono.fromCallable(()-> {
@@ -156,6 +178,16 @@ public class StudentServiceImpl implements StudentService {
         }).publishOn(Schedulers.boundedElastic());
     }
 
+    /**
+
+     * @param studentWrapper
+     * The method takes in a StudentWrapper object that contains the ID of the institution and the page number to return.
+     * uses a Pageable object to specify the page number and the number of items to return.
+     * retrieves the institution object using its ID and throws an exception if the institution is not found.
+     *  calls the studentRepository to retrieve a Page object containing the students associated with the specified institution, using the findAllByInstitutionId method.
+     *
+     * @return  UniversalResponse object containing a status of 200
+     */
     @Override
     public Mono<UniversalResponse> listStudents(StudentWrapper studentWrapper) {
         return Mono.fromCallable(()-> {
@@ -168,6 +200,15 @@ public class StudentServiceImpl implements StudentService {
         }).publishOn(Schedulers.boundedElastic());
     }
 
+    /**
+     *
+     * @param studentWrapper
+     *  takes in a StudentPager object that contains the page number and the ID of the institution for which to retrieve the list of students.
+     *  a Pageable object is created using the page number provided in the StudentPager
+     *  The studentRepository is then called to retrieve the students that belong to the institution with the ID provided in the StudentPager, using the findAllByInstitutionId method.
+     *  The retrieved students are then stored in a Page object
+     * @return UniversalResponse object  with a status of 200
+     */
     @Override
     public Mono<UniversalResponse> findStudentsInInstitution(StudentPager studentWrapper) {
         return Mono.fromCallable(()-> {

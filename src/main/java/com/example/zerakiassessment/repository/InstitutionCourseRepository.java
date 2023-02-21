@@ -13,7 +13,7 @@ public interface InstitutionCourseRepository extends JpaRepository<InstitutionCo
 
     boolean existsByInstitution(long institutionId);
 
-    List<InstitutionCourse> findByCourse(long courseId);
+
 
 
 
